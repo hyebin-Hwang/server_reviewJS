@@ -1,0 +1,5 @@
+#node_moduls
+node_modules/
+
+#yarn.lock
+yarn.lock/
