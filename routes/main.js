@@ -1,6 +1,7 @@
 const conn = require("../mysql");
 const cors = require("cors");
 const express = require("express");
+const e = require("express");
 
 module.exports = function (app) {
   app.use(cors());
@@ -56,6 +57,17 @@ module.exports = function (app) {
       } else {
         console.log(result);
       }
+    });
+  });
+
+  app.post("/review/login", (req, res) => {
+    const { id, password } = req.body;
+    conn.query("select * from userData", (err, result) => {
+      const currentUser = result.find(
+        (userData) =>
+          userData.user_id === id && userData.user_password === password
+      );
+      res.json(currentUser.user_nickname);
     });
   });
 
