@@ -1,8 +1,11 @@
 const conn = require("../mysql");
 const cors = require("cors");
+const express = require("express");
 
 module.exports = function (app) {
   app.use(cors());
+
+  app.use(express.json());
   app.get("/", (req, res) => {
     conn.query("select * from review", (err, result) => {
       res.send(result);
@@ -20,9 +23,45 @@ module.exports = function (app) {
   });
   //
   //
+  app.post("/review/user/id", (req, res) => {
+    const userId = req.body.user.id;
+    conn.query("select * from userData", (err, result) => {
+      const DB_userId = result.map((user) => user.user_id);
+      DB_userId.map((user) => {
+        if (user === userId) {
+          return res.send(true);
+        }
+      });
+      if (err) {
+        console.log(err);
+      }
+    });
+  });
+  app.post("/review/user/nickname", (req, res) => {
+    const nickname = req.body.user.nickname;
+    conn.query("select * from userData", (err, result) => {
+      const DB_nickname = result.map((user) => user.user_nickname);
+      DB_nickname.map((user) => {
+        if (user === nickname) return res.json(true);
+      });
+    });
+  });
+  app.post("/review/user", (req, res) => {
+    const { id, password, nickname } = req.body;
+    const user_add_sql =
+      "insert into userData (user_id,user_password,user_nickname) values(?,?,?)";
+    conn.query(user_add_sql, [id, password, nickname], (err, result) => {
+      if (err) {
+        console.log(err);
+      } else {
+        console.log(result);
+      }
+    });
+  });
+
   app.get("/review/json", (req, res) => {
     conn.query("select * from reviewData ", (err, result) => {
-      res.json(result);
+      res.send(result);
     });
   });
   app.post("/review/new", (req, res) => {
