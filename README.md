@@ -1,3 +1,3 @@
 ### vanillaJS review server
 
-1. /review/login 추가
+1. main js 라우트 수정 

@@ -1,28 +1,16 @@
 const conn = require("../mysql");
 const cors = require("cors");
 const express = require("express");
-const e = require("express");
 
 module.exports = function (app) {
   app.use(cors());
-
   app.use(express.json());
   app.get("/", (req, res) => {
     conn.query("select * from review", (err, result) => {
       res.send(result);
     });
   });
-  app.get("/re", (req, res) => {
-    conn.query("select * from reviewData", (err, result) => {
-      res.send(result);
-    });
-  });
-  app.get("/co", (req, res) => {
-    conn.query("select * from commentData", (err, result) => {
-      res.send(result);
-    });
-  });
-  //
+
   //
   app.post("/review/user/id", (req, res) => {
     const userId = req.body.user.id;
@@ -71,7 +59,7 @@ module.exports = function (app) {
     });
   });
 
-  app.get("/review/json", (req, res) => {
+  app.get("/review/reviewData", (req, res) => {
     conn.query("select * from reviewData ", (err, result) => {
       res.send(result);
     });
@@ -97,7 +85,7 @@ module.exports = function (app) {
     );
   });
 
-  app.get("/review/update/:id/json", (req, res) => {
+  app.get("/review/updateData/:id", (req, res) => {
     let index = req.params.id;
     if (index) {
       conn.query(
@@ -113,8 +101,7 @@ module.exports = function (app) {
       );
     }
   });
-
-  app.post("/review/update/:id/json/comment", (req, res) => {
+  app.post("/review/updateData/:id/comment", (req, res) => {
     const commentId = req.body.comment_id;
     const commentContent = req.body.comment_content;
     const boardNum = req.params.id;
@@ -143,7 +130,7 @@ module.exports = function (app) {
       }
     );
   });
-  app.get("/review/update/:id/json/comment", (req, res) => {
+  app.get("/review/updateData/:id/comment", (req, res) => {
     let commentIndex = req.params.id;
     let commentQuery = "select * from commentData where board_num=?";
     conn.query(commentQuery, [commentIndex], (err, result) => {
@@ -155,8 +142,7 @@ module.exports = function (app) {
       }
     });
   });
-
-  app.post("/review/update/:id/json/comment/delete", (req, res) => {
+  app.post("/review/updateData/:id/comment/delete", (req, res) => {
     let commentNum = req.body.list_num.commentNum;
     const commentDeleteSql = "delete from commentData where comment_num=?";
     conn.query(commentDeleteSql, [commentNum], (err, result) => {
@@ -168,7 +154,7 @@ module.exports = function (app) {
       }
     });
   });
-  app.post("/review/update/:id/json/comment/edit", (req, res) => {
+  app.post("/review/updateData/:id/comment/edit", (req, res) => {
     let editContent = req.body.editContent;
     let editTime = req.body.editTime;
     let editNum = req.body.editDataset;
@@ -183,18 +169,8 @@ module.exports = function (app) {
       }
     });
   });
-  app.post("/review/update/:id/json/delete", (req, res) => {
-    let content_id = req.body.contentId;
-    let contentDeleteSql = "delete from reviewData where id=?";
-    conn.query(contentDeleteSql, [content_id], (err, result) => {
-      if (err) {
-        console.log(err);
-        throw new Error();
-      }
-      console.log("Delete !!");
-    });
-  });
-  app.get("/review/update/:id/edit/json", (req, res) => {
+
+  app.get("/review/updateData/:id/edit", (req, res) => {
     const reviewEditId = req.params.id;
     const reviewEditSql = "select * from reviewData where id=?";
     conn.query(reviewEditSql, [reviewEditId], (err, result) => {
@@ -205,7 +181,7 @@ module.exports = function (app) {
       res.send(result);
     });
   });
-  app.post("/review/update/:id/edit/json", (req, res) => {
+  app.post("/review/updateData/:id/edit/click", (req, res) => {
     const editId = req.params.id;
     const title = req.body.title;
     const sub_title = req.body;
@@ -225,8 +201,18 @@ module.exports = function (app) {
       }
     );
   });
+  app.post("/review/updateData/:id/delete", (req, res) => {
+    let content_id = req.body.contentId;
+    let contentDeleteSql = "delete from reviewData where id=?";
+    conn.query(contentDeleteSql, [content_id], (err, result) => {
+      if (err) {
+        console.log(err);
+        throw new Error();
+      }
+    });
+  });
 
-  app.post("/review/profile/json", (req, res) => {
+  app.post("/review/profile", (req, res) => {
     const userId = req.body.userId;
     const profileSql = "select * from reviewData where userId=?";
 
@@ -239,7 +225,7 @@ module.exports = function (app) {
     });
   });
 
-  app.post("/review/search/json", (req, res) => {
+  app.post("/review/search", (req, res) => {
     const search = req.body.query;
     const searchQquery = `select * from reviewData where concat(title,content,sub_title) like '%${search}%'`;
     conn.query(searchQquery, (err, result) => {
@@ -250,7 +236,7 @@ module.exports = function (app) {
     });
   });
 
-  app.get("/review/movie/json", (req, res) => {
+  app.get("/review/category/movie", (req, res) => {
     const movieSql = "select * from reviewData where category='영화'";
     conn.query(movieSql, (err, result) => {
       if (err) {
@@ -260,8 +246,7 @@ module.exports = function (app) {
       res.send(result);
     });
   });
-
-  app.get("/review/book/json", (req, res) => {
+  app.get("/review/category/book", (req, res) => {
     const bookSql = "select * from reviewData where category='도서'";
     conn.query(bookSql, (err, result) => {
       if (err) {
@@ -271,7 +256,7 @@ module.exports = function (app) {
       res.send(result);
     });
   });
-  app.get("/review/album/json", (req, res) => {
+  app.get("/review/category/album", (req, res) => {
     const albumSql = "select * from reviewData where category='앨범'";
     conn.query(albumSql, (err, result) => {
       if (err) {
