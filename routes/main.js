@@ -5,13 +5,12 @@ const express = require("express");
 module.exports = function (app) {
   app.use(cors());
   app.use(express.json());
-  app.get("/", (req, res) => {
-    conn.query("select * from review", (err, result) => {
+
+  app.get("/review/reviewData", (req, res) => {
+    conn.query("select * from reviewData order by id desc", (err, result) => {
       res.send(result);
     });
   });
-
-  //
   app.post("/review/user/id", (req, res) => {
     const userId = req.body.user.id;
     conn.query("select * from userData", (err, result) => {
@@ -59,11 +58,6 @@ module.exports = function (app) {
     });
   });
 
-  app.get("/review/reviewData", (req, res) => {
-    conn.query("select * from reviewData ", (err, result) => {
-      res.send(result);
-    });
-  });
   app.post("/review/new", (req, res) => {
     const title = req.body.title;
     const category = req.body.category;
